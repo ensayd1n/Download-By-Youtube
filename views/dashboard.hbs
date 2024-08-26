@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-red-600 text-white w-full">
+        <nav class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <div>
+                <a href="/" class="hover:text-gray-300">
+                    <img src="/logo.png" class="h-12 w-12" alt="Logo">
+                </a>
+            </div>
+            <div class="space-x-4">
+                <a href="#" class="font-Helvetica hover:text-gray-50">Services</a>
+                <a href="#" class="font-Helvetica hover:text-gray-50">About</a>
+            </div>
+        </nav>
+    </header>
+    <footer class="bg-red-600 text-white w-full fixed bottom-0 left-0">
+        <nav class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <div class="text-sm">
+                © 2024 Your Company. All rights reserved.
+            </div>
+            <div class="space-x-4">
+                <a href="#" class="font-light hover:text-gray-50">○ Developed by ensayd1in</a>
+            </div>
+        </nav>
+    </footer>
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        {{{body}}}
+    </main>
+</body>
+</html>

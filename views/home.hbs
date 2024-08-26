@@ -1,0 +1,48 @@
+<div class="rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+     <div class="fixed top-1/2 left-0 transform -translate-y-1/2 w-40 h-96 bg-gray-200 shadow-lg hidden lg:block">
+        <!-- Reklam içeriği -->
+        <a href="https://www.example.com" target="_blank" class="flex items-center justify-center h-full">
+            <img src="https://via.placeholder.com/160x600" alt="Reklam">
+        </a>
+    </div>
+     <div class="fixed top-1/2 right-0 transform -translate-y-1/2 w-40 h-96 bg-gray-200 shadow-lg hidden lg:block">
+        <!-- Reklam içeriği -->
+        <a href="https://www.example.com" target="_blank" class="flex items-center justify-center h-full">
+            <img src="https://via.placeholder.com/160x600" alt="Reklam">
+        </a>
+    </div>
+
+
+    <form action="/convert" method="POST" class="space-y-4 bg-gray-200 py-5 px-5 rounded-md">
+    <table class="w-full">
+        <tr>
+            <td colspan="2">
+                <div class="mt-2 flex items-center">
+                    <input type="text" name="url" class="w-full h-12 border-gray-300 rounded-md shadow-md focus:ring-gray-200 focus:border-blue-500 px-4 text-lg" placeholder="Add URL">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="pr-2">
+                <div>
+                    <button type="submit" class="px-20 mt-2 w-full h-8 bg-red-600 text-white focus:ring-blue-600 rounded-md shadow-md">Download</button>
+                </div>
+            </td>
+            <td class="pl-2">
+                <div>
+                    <select id="options" name="options" class="mt-2 w-full h-8 border-gray-300 rounded-md shadow-md focus:ring-blue-500 focus:border-blue-500 px-4 text-lg">
+                        <option value="1">MP3</option>
+                        <option value="2">MP4</option>
+                    </select>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="mt-1 text-sm text-gray-600 font-light">○ By using our service you agree to our terms of use</p>
+            </td>
+        </tr>
+    </table>
+</form>
+
+</div>
