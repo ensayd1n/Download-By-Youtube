@@ -1,12 +1,12 @@
 const express = require('express');
 const { engine } = require('express-handlebars');
-const multer = require('multer');
 const ytdl = require('ytdl-core');
+const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const path = require('path');
 
-const app=express();
-const port=3000;
+const app = express();
+const port = 3000;
 
 app.engine('hbs', engine({ extname: '.hbs', defaultLayout: 'dashboard', layoutsDir: path.join(__dirname, 'views',) }));
 app.set('view engine', 'hbs');
@@ -15,50 +15,96 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
 app.post('/convert', async (req, res) => {
-    const { url, options } = req.body;
+  const { url, options } = req.body;
 
-    if (!url || !options) {
-        return res.status(400).send('URL and options are required');
-    }
+  if (!url || !options) {
+    return res.status(400).send('URL ve seçenekler gereklidir');
+  }
 
-    let fileExtension, fileName;
+  let fileExtension, fileName;
+  if (options === '1') {
+    fileExtension = 'mp3';
+    fileName = 'downloaded-file.mp3';
+  } else if (options === '2') {
+    fileExtension = 'mp4';
+    fileName = 'downloaded-file.mp4';
+  } else {
+    return res.status(400).send('Geçersiz seçenek');
+  }
+
+  try {
+    const filePath = path.join(__dirname, fileName);
+
     if (options === '1') {
-        fileExtension = 'mp3';
-        fileName = 'downloaded-file.mp3';
-    } else if (options === '2') {
-        fileExtension = 'mp4';
-        fileName = 'downloaded-file.mp4';
+      // MP3 indirme
+
+      // Önce videoyu indirin ve bir geçici dosyaya kaydedin
+      const videoStream = ytdl(url, { filter: 'audioonly' });
+      const tempFilePath = path.join(__dirname, 'temp.mp4');
+      const tempFileStream = fs.createWriteStream(tempFilePath);
+
+      videoStream.pipe(tempFileStream);
+
+      videoStream.on('end', () => {
+        // Geçici dosyayı MP3'e dönüştürün
+        ffmpeg(tempFilePath)
+          .toFormat('mp3')
+          .on('error', (err) => {
+            console.error('MP3 kodlama hatası:', err);
+            res.status(500).send('Dosya indirme başarısız');
+            // Geçici dosyayı silin
+            fs.unlinkSync(tempFilePath);
+          })
+          .on('end', () => {
+            console.log('MP3 dosyası başarıyla indirildi.');
+            res.download(filePath, fileName, (err) => {
+              if (err) {
+                console.error('Dosya indirme hatası:', err);
+                res.status(500).send('Dosya indirme başarısız');
+              }
+              // Geçici dosyayı silin
+              fs.unlinkSync(tempFilePath);
+            });
+          })
+          .pipe(fs.createWriteStream(filePath));
+      });
+
+      videoStream.on('error', (err) => {
+        console.error('MP3 indirme hatası:', err);
+        res.status(500).send('Dosya indirme başarısız');
+        // Geçici dosyayı silin
+        fs.unlinkSync(tempFilePath);
+      });
+
     } else {
-        return res.status(400).send('Invalid option');
+      // MP4 indirme
+      ytdl(url)
+        .on('error', (err) => {
+          console.error('MP4 indirme hatası:', err);
+          res.status(500).send('Dosya indirme başarısız');
+        })
+        .on('end', () => {
+          console.log('MP4 dosyası başarıyla indirildi.');
+          res.download(filePath, fileName, (err) => {
+            if (err) {
+              console.error('Dosya indirme hatası:', err);
+              res.status(500).send('Dosya indirme başarısız');
+            }
+          });
+        })
+        .pipe(fs.createWriteStream(filePath));
     }
-
-    try {
-        // Dosyayı indirin
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const filePath = path.join(__dirname, fileName);
-        const fileStream = fs.createWriteStream(filePath);
-
-        response.body.pipe(fileStream);
-        res.render('home');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Failed to download file');
-    }
+  } catch (error) {
+    console.error('Genel hata:', error);
+    res.status(500).send('Dosya indirme başarısız');
+  }
 });
 
-
-app.get('/',(req,res) => {
-res.render('home');
+app.get('/', (req, res) => {
+  res.render('home');
 });
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  console.log(`Sunucu ${port} portunda çalışıyor`);
 });
